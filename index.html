@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Vue</title>
+
+    <script type="text/javascript">
+    	
+
+
+    	//判断object 排除null
+	    function isObject(obj) {
+	    	return obj!=null && typeof(obj) =='object';
+	    }
+
+	    //判断object 排除包装类
+	    function isPlainObject(obj) {
+	    	return Object.prototype.toString(obj) =='[object Object]';
+	    }
+
+	    //创建Observer对象
+	    function observer(data) {
+	    	if(!isObject(data) || !isPlainObject(data) ){
+	    		return ;
+	    	}
+	    	return new Observer(data);
+	    }
+
+	    //Observer构造函数
+	    function Observer(data){
+	    	this.data = data;
+	    	this.transform(data);
+	    }
+
+	   //监听对象变化
+	    Observer.prototype.transform = function(data) {
+	    	// for(var key in data){
+		    // 	this.defineReactive(data, key, data[key]);
+		    // }
+
+		    // return;
+
+		    for(var key in data){
+		    	(function(value){
+			    	Object.defineProperty(data, key, {
+			    		enumerable: true,
+		           		configurable: false,
+			    		get: function() {
+			    			console.info("get");
+			    			return value;
+			    		},
+			    		set: function(n) {
+			    			console.info("set");	
+			    			if(value == n)
+			    				return ;
+			    			value = n ;
+			    		}
+				    });
+				    observer(value);
+			    })(data[key])
+		    }
+
+	    }
+
+	    //监听对象变化
+	    Observer.prototype.defineReactive = function(data, key, value){
+	    	Object.defineProperty(data, key, {
+	    		enumerable: true,
+           		configurable: false,
+	    		get: function() {
+	    			console.info("get");
+	    			return value;
+	    		},
+	    		set: function(n) {
+	    			console.info("set");	
+	    			if(value == n)
+	    				return ;
+	    			value = n ;
+	    		}
+		    });
+		    //递归监听object
+		    observer(value);
+	    }
+	    
+
+
+	    var x = {x : 1,y:{y:1}}
+		observer(x);
+		console.log(x.x);
+
+
+
+    </script>
+</head>
+<body>
+	
+	
+
+</body>
+</html>
